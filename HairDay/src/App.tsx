@@ -24,7 +24,7 @@ export default function App() {
         <Logo />
       </header>
 
-      <div className="flex gap-30 bg-gray-800">
+      <div className="flex gap-20 bg-gray-800">
 
         <section className="bg-gray-700 w-150 ml-10 px-10 h-220">
           <Text as="h1" appearance="inverse" variant="page-title" className="space-y-2 flex flex-col w-100 mt-18 ml-10">
@@ -76,7 +76,7 @@ export default function App() {
 
         <aside className="bg-gray-800 flex-col">
 
-          <div className="bg-gray-800 flex flex-row-reverse mr-25">
+          <div className="bg-gray-800 flex flex-row-reverse mr-20">
 
             <ContainerStyle variant="sm" className="ml-auto mt-25 bg-gray-700">
               <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
@@ -92,7 +92,7 @@ export default function App() {
             </div>
           </div>
 
-          <ul className="bg-gray-800 mt-7 mr-25">
+          <ul className="bg-gray-800 mt-7 mr-20">
             <ContainerStyle className=" bg-gray-800 border border-gray-500 border-b-gray-500">
               <div className="flex px-2 gap-1.5">
                 <Icon svg={DayIcon} className="fill-yellow mt-2"></Icon>
