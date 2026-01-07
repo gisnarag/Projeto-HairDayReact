@@ -28,6 +28,6 @@ export default function Button({ variant, size, disabled, className, children, .
     return (
         <button
             {...props}
-            className={buttonVariantsProps({ variant, size, disabled, className })}>{children} <Text variant="title-md">AGENDAR</Text></button>
+            className={buttonVariantsProps({ variant, size, disabled, className })}>{children} <Text variant="title-md" cursor="pointer">AGENDAR</Text></button>
     )
 }   

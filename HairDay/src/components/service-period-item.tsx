@@ -7,15 +7,23 @@ type OpeningHour = typeof openingHours[number]
 
 interface ServicePeriodItemProps extends React.ComponentProps<"li"> {
     period: ServicePeriodItem,
-    hour?: OpeningHour[]
 }
 
 export default function ServicePeriodItem({ period, className, ...props }: ServicePeriodItemProps) {
+
+    const hours = openingHours.filter(item => item.period === period).map(item => item.hour)
+
+    console.log(hours)
+
     return (
+
         <li {...props} data-period={period} className={className}>
-            <ButtonItem disabled={true}>09:00</ButtonItem>
-            <ButtonItem>10:00</ButtonItem>
-            <ButtonItem selected={true}>11:00</ButtonItem>
+            {hours.map(hour => (
+                <ButtonItem key={hour}>
+                    {hour}
+                </ButtonItem>
+            ))}
         </li>
+
     )
-}
+}   
