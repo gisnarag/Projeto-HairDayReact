@@ -6,44 +6,119 @@ import DayIcon from "./assets/sun.svg?react";
 import AfternoonIcon from "./assets/afternoon.svg?react";
 import NightIcon from "./assets/night.svg?react";
 import PersonIcon from "./assets/person.svg?react";
-import RightIcon from "./assets/right.svg?react";
-import LeftIcon from "./assets/left.svg?react";
 import CalendarIcon from "./assets/calendar.svg?react";
 import TrashIcon from "./assets/trash.svg?react";
+import Logo from "./assets/logo.svg?react";
+import ServicePeriodList from "./components/service-period-list";
+import ContainerStyle from "./components/container-style";
+import ServicePeriodItem from "./components/service-period-item";
+import ScheduleItem from "./components/schedule-item";
+import ButtonTrashIcon from "./components/button-trash-icon";
 
 export default function App() {
 
   return (
-    <>
-      <Text className="text-gray-700">
-        SURTANDO
-      </Text>
+    <main className="bg-gray-800">
 
-      <div>
-        <Icon svg={DayIcon} animate={true} />
-        <Icon svg={AfternoonIcon} animate={true} />
-        <Icon svg={NightIcon} animate={true} />
-        <Icon svg={PersonIcon} className=" fill-yellow" />
-        <Icon svg={RightIcon} className=" fill-yellow" />
-        <Icon svg={LeftIcon} className=" fill-yellow" />
-        <Icon svg={CalendarIcon} className=" fill-yellow" />
-        <Icon svg={TrashIcon} className=" fill-yellow" />
-      </div>
+      <header className="absolute bg-gray-600 rounded-b-lg w-35 flex items-center justify-center py-3">
+        <Logo />
+      </header>
 
-      <div>
-        <Button disabled className="w-80" />
-        <Button className="w-80" />
-      </div>
+      <div className="flex gap-15 bg-gray-800 w-150">
 
-      <div className=" flex w-80 h-15 gap-3 px-3 py-4 bg-gray-500 rounded-md border border-gray-200 cursor-pointer">
-        <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
-        <Input type="date" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 cursor-pointer focus:outline-none" />
-      </div>
+        <section className="bg-gray-700 w-150 ml-10 px-10 h-180">
+          <Text as="h1" appearance="inverse" variant="page-title" className="space-y-2 flex flex-col w-100 mt-18 ml-10">
+            Agende um atendimento
+          </Text>
 
-      <div className=" flex w-80 h-15 gap-3 px-3 py-4 bg-gray-500 rounded-md border border-gray-200 cursor-pointer">
-        <Icon svg={PersonIcon} className=" fill-yellow"></Icon>
-        <Input type="text" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 focus:outline-none" />
+          <Text as="p" appearance="secondary" className="space-y-2 flex flex-col w-100 mt-4 ml-10">
+            Selecione data, horário e informe o nome do cliente para criar o agendamento.
+          </Text>
+
+          <Text as="h2" appearance="secondary" variant="title-md" className="mt-6 ml-10 mb-2">Data</Text>
+
+          <ContainerStyle variant="secondary" className="ml-10 bg-gray-700">
+            <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
+            <Input type="date" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 cursor-pointer focus:outline-none" />
+          </ContainerStyle>
+
+          <Text as="h2" appearance="secondary" variant="title-md" className="mt-8 ml-10">Horários</Text>
+
+          <Text as="p" appearance="secondary" variant="body-text-md" className="mt-2 ml-10">Manhã</Text>
+
+          <ul className="bg-gray-600 h-20 ml-10">
+            <ServicePeriodItem period={"morning"} className="flex gap-4" />
+          </ul>
+
+          <Text as="h2" appearance="secondary" variant="title-md" className="mt-6 ml-10 mb-2">Cliente</Text>
+
+          <ContainerStyle variant="secondary" className="ml-10 bg-gray-700">
+            <Icon svg={PersonIcon} className=" fill-yellow"></Icon>
+            <Input type="text" placeholder="Nome do cliente" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 focus:outline-none" />
+          </ContainerStyle>
+
+          <div className="ml-10 mt-7">
+            <Button className="w-80" />
+          </div>
+        </section>
+
+        <aside className="bg-gray-800 flex-col">
+
+          <div className="bg-gray-800 flex flex-row-reverse">
+
+            <ContainerStyle variant="sm" className="ml-auto mt-15 bg-gray-700">
+              <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
+              <Input type="date" className="font-sans text-base leading-6 text-gray-200 cursor-pointer focus:outline-none" />
+            </ContainerStyle>
+
+            <div className="mt-18">
+              <Text as="h2" appearance="inverse" variant="page-title">
+                Sua agenda
+              </Text>
+
+              <Text as="p" appearance="secondary" className="mt-3">Consulte os seus cortes de cabelo agendados por dia.</Text>
+            </div>
+          </div>
+
+          <ul className="bg-gray-800 mt-7">
+            <ContainerStyle className=" bg-gray-800 border border-gray-500 border-b-gray-500">
+              <div className="flex px-2 gap-1.5">
+                <Icon svg={DayIcon} className="fill-yellow mt-2"></Icon>
+                <ServicePeriodList period={"morning"} label={"Manhã"} className="mt-3 mb-3" />
+              </div>
+              <Text className="text-gray-300 mt-3" appearance="tertiary">09h-12h</Text>
+            </ContainerStyle>
+
+            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" />
+            </ScheduleItem>
+
+            <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
+              <div className="flex px-2 gap-1.5">
+                <Icon svg={AfternoonIcon} className="fill-yellow mt-2"></Icon>
+                <ServicePeriodList period={"afternoon"} label={"Tarde"} className="mt-3 mb-3" />
+              </div>
+              <Text className="text-gray-300 mt-3" appearance="tertiary">13h-17h</Text>
+            </ContainerStyle>
+
+            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" />
+            </ScheduleItem>
+
+            <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
+              <div className="flex px-2 gap-2">
+                <Icon svg={NightIcon} className="fill-yellow mt-2" animate={true}></Icon>
+                <ServicePeriodList period={"night"} label={"Noite"} className="mt-3 mb-3" />
+              </div>
+              <Text className="text-gray-300 mt-3" appearance="tertiary">18h-21h</Text>
+            </ContainerStyle>
+
+            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-3" />
+            </ScheduleItem>
+          </ul>
+        </aside>
       </div>
-    </>
+    </main>
   )
 }

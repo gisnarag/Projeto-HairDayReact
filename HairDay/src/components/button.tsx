@@ -11,7 +11,7 @@ export const buttonVariantsProps = cva("flex items-center justify-center cursor-
             md: "h-3 py-7 px-7"
         },
         disabled: {
-            true: "opacity-50 pointer-events-none"
+            true: "opacity-50 border-transparent pointer-events-none "
         },
     },
     defaultVariants: {
