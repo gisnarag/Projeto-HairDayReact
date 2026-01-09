@@ -14,8 +14,11 @@ import ContainerStyle from "./components/container-style";
 import ServicePeriodItem from "./components/service-period-item";
 import ScheduleItem from "./components/schedule-item";
 import ButtonTrashIcon from "./components/button-trash-icon";
+import useDateInput from "./hooks/use-date-input";
 
 export default function App() {
+
+  const { dateInput, handleChange } = useDateInput()
 
   return (
     <main className="bg-gray-800">
@@ -39,7 +42,7 @@ export default function App() {
 
           <ContainerStyle variant="secondary" className="ml-10 bg-gray-700">
             <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
-            <Input type="date" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 cursor-pointer focus:outline-none" />
+            <Input type="date" value={dateInput} className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 cursor-pointer focus:outline-none" onChange={handleChange} />
           </ContainerStyle>
 
           <Text as="h2" appearance="secondary" variant="title-md" className="mt-10 ml-10">Horários</Text>
@@ -70,7 +73,7 @@ export default function App() {
           </ContainerStyle>
 
           <div className="ml-10 mt-7">
-            <Button className="w-80" />
+            <Button className="w-90" />
           </div>
         </section>
 
@@ -80,7 +83,7 @@ export default function App() {
 
             <ContainerStyle variant="sm" className="ml-auto mt-25 bg-gray-700">
               <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
-              <Input type="date" className="font-sans text-base leading-6 text-gray-200 cursor-pointer focus:outline-none" />
+              <Input type="date" className="font-sans text-base leading-6 text-gray-200 cursor-pointer focus:outline-none" onChange={handleChange} />
             </ContainerStyle>
 
             <div className="mt-32">

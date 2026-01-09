@@ -13,8 +13,6 @@ export default function ServicePeriodItem({ period, className, ...props }: Servi
 
     const hours = openingHours.filter(item => item.period === period).map(item => item.hour)
 
-    console.log(hours)
-
     return (
 
         <li {...props} data-period={period} className={className}>
