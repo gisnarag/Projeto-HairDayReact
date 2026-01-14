@@ -7,17 +7,16 @@ const today = dayjs().format("YYYY-MM-DD");
 export default function useDateInput() {
     const [dateInput, setDateInput] = useState(today)
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const value = (e.target.value)
-        setDateInput(value);
-        console.log(value)
+    function handleChangeDateInput(e: React.ChangeEvent<HTMLInputElement>) {
+        const selectedDate = e.target.value
 
+        console.log(selectedDate)
+
+        setDateInput(selectedDate);
     }
     return {
         dateInput,
-        handleChange
-
-    }
-
+        handleChangeDateInput
+    };
 }
 

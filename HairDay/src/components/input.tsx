@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 export const InputVariants = cva("", {
     variants: {
         size: {
-            md: "w-70 h-6 rounded-sm"
+            md: "h-6 flex-1 min-w-25"
         },
     },
     defaultVariants: {

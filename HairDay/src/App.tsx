@@ -11,14 +11,34 @@ import TrashIcon from "./assets/trash.svg?react";
 import Logo from "./assets/logo.svg?react";
 import ServicePeriodList from "./components/service-period-list";
 import ContainerStyle from "./components/container-style";
-import ServicePeriodItem from "./components/service-period-item";
 import ScheduleItem from "./components/schedule-item";
 import ButtonTrashIcon from "./components/button-trash-icon";
 import useDateInput from "./hooks/use-date-input";
+import useButtonHourSelected from "./hooks/use-button-hour";
+import { openingHours } from "./utils/opening-hours";
+import ButtonItem from "./components/button-item";
+import useTextInput from "./hooks/use-text-input";
 
 export default function App() {
 
-  const { dateInput, handleChange } = useDateInput()
+  const { dateInput, handleChangeDateInput } = useDateInput();
+
+  const { selectedHour, handleButtonHourSelected } = useButtonHourSelected();
+
+  const { name, handleTextInput } = useTextInput();
+
+  const hoursMorning = openingHours.filter(item => item.period === "morning").map(item => item.hour)
+  const hoursAfternoon = openingHours.filter(item => item.period === "afternoon").map(item => item.hour)
+  const hoursNight = openingHours.filter(item => item.period === "night").map(item => item.hour)
+
+  function handleConfirmButton() {
+    if (!selectedHour || !dateInput || !name) {
+      alert("Preencha um horário para agendamento!")
+      return;
+
+    }
+    console.log("Enviando para API..", { hora: selectedHour, data: dateInput, nome: name })
+  }
 
   return (
     <main className="bg-gray-800">
@@ -42,7 +62,7 @@ export default function App() {
 
           <ContainerStyle variant="secondary" className="ml-10 bg-gray-700">
             <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
-            <Input type="date" value={dateInput} className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 cursor-pointer focus:outline-none" onChange={handleChange} />
+            <Input type="date" value={dateInput} min={dateInput} className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 focus:outline-none cursor-pointer" onChange={handleChangeDateInput} onKeyDown={(e) => e.preventDefault()} />
           </ContainerStyle>
 
           <Text as="h2" appearance="secondary" variant="title-md" className="mt-10 ml-10">Horários</Text>
@@ -50,30 +70,48 @@ export default function App() {
           <Text as="p" appearance="secondary" variant="body-text-md" className="mt-2 ml-10">Manhã</Text>
 
           <ul className="bg-gray-700 h-12 ml-10 flex items-center justify-between w-95">
-            <ServicePeriodItem period={"morning"} className="flex gap-3" />
+            <li className="flex gap-3" >
+              {hoursMorning.map(hour => (
+                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                  {hour}
+                </ButtonItem>
+              ))}
+            </li>
           </ul>
 
           <Text as="p" appearance="secondary" variant="body-text-md" className="mt-3 ml-10">Tarde</Text>
 
           <ul className="bg-gray-700 h-25 ml-10 flex items-center justify-between w-95">
-            <ServicePeriodItem period={"afternoon"} className="flex flex-wrap gap-3" />
+            <li className="flex flex-wrap gap-3" >
+              {hoursAfternoon.map(hour => (
+                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                  {hour}
+                </ButtonItem>
+              ))}
+            </li>
           </ul>
 
           <Text as="p" appearance="secondary" variant="body-text-md" className="mt-3 ml-10">Noite</Text>
 
           <ul className="bg-gray-700 h-12 ml-10 flex items-center justify-between w-95">
-            <ServicePeriodItem period={"night"} className="flex gap-3" />
+            <li className="flex gap-3" >
+              {hoursNight.map(hour => (
+                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                  {hour}
+                </ButtonItem>
+              ))}
+            </li>
           </ul>
 
           <Text as="h2" appearance="secondary" variant="title-md" className="mt-10 ml-10 mb-2">Cliente</Text>
 
           <ContainerStyle variant="secondary" className="ml-10 bg-gray-700">
             <Icon svg={PersonIcon} className=" fill-yellow"></Icon>
-            <Input type="text" placeholder="Nome do cliente" className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 focus:outline-none" />
+            <Input type="text" placeholder="Nome do cliente" value={name} className="font-sans text-base leading-6 text-gray-200 border-b-gray-200 focus:outline-none" onChange={handleTextInput} />
           </ContainerStyle>
 
           <div className="ml-10 mt-7">
-            <Button className="w-90" />
+            <Button className="w-90" onClick={() => handleConfirmButton()} />
           </div>
         </section>
 
@@ -83,7 +121,7 @@ export default function App() {
 
             <ContainerStyle variant="sm" className="ml-auto mt-25 bg-gray-700">
               <Icon svg={CalendarIcon} className=" fill-yellow"></Icon>
-              <Input type="date" className="font-sans text-base leading-6 text-gray-200 cursor-pointer focus:outline-none" onChange={handleChange} />
+              <Input type="date" value={dateInput} min={dateInput} className="font-sans text-base leading-6 text-gray-200 focus:outline-none cursor-pointer" onChange={handleChangeDateInput} onKeyDown={(e) => e.preventDefault()} />
             </ContainerStyle>
 
             <div className="mt-32">
@@ -98,8 +136,8 @@ export default function App() {
           <ul className="bg-gray-800 mt-7 mr-20">
             <ContainerStyle className=" bg-gray-800 border border-gray-500 border-b-gray-500">
               <div className="flex px-2 gap-1.5">
-                <Icon svg={DayIcon} className="fill-yellow mt-2"></Icon>
-                <ServicePeriodList period={"morning"} label={"Manhã"} className="mt-3 mb-3 cursor-default" />
+                <Icon svg={DayIcon} className="fill-yellow mt-2 ml-2"></Icon>
+                <ServicePeriodList period={"morning"} label={"Manhã"} className="mt-3 mb-3 ml-1 cursor-default" />
               </div>
               <Text className="text-gray-300 mt-3" appearance="tertiary">09h-12h</Text>
             </ContainerStyle>
@@ -110,8 +148,8 @@ export default function App() {
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-1.5">
-                <Icon svg={AfternoonIcon} className="fill-yellow mt-2"></Icon>
-                <ServicePeriodList period={"afternoon"} label={"Tarde"} className="mt-3 mb-3 cursor-default" />
+                <Icon svg={AfternoonIcon} className="fill-yellow mt-2 ml-2"></Icon>
+                <ServicePeriodList period={"afternoon"} label={"Tarde"} className="mt-3 mb-3 ml-1 cursor-default" />
               </div>
               <Text className="text-gray-300 mt-3" appearance="tertiary">13h-17h</Text>
             </ContainerStyle>
@@ -122,8 +160,8 @@ export default function App() {
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-2">
-                <Icon svg={NightIcon} className="fill-yellow mt-2" animate={true}></Icon>
-                <ServicePeriodList period={"night"} label={"Noite"} className="mt-3 mb-3 cursor-default" />
+                <Icon svg={NightIcon} className="fill-yellow mt-2 ml-2" animate={true}></Icon>
+                <ServicePeriodList period={"night"} label={"Noite"} className="mt-3 mb-3 ml-1 cursor-default" />
               </div>
               <Text className="text-gray-300 mt-3" appearance="tertiary">18h-21h</Text>
             </ContainerStyle>

@@ -6,7 +6,7 @@ export const ContainerStyleVariants = cva("", {
         variant: {
             primary: "flex justify-between pr-6 border-b border-b-gray-400 rounded-sm w-190 bg-gray-600",
             secondary: "flex w-90 h-14 gap-3 px-3 py-4 bg-gray-600 rounded-md border border-gray-400 focus-within:border-yellow",
-            sm: "flex w-40 h-14 gap-3 px-3 py-4 bg-gray-600 rounded-md border border-gray-400 focus-within:border-yellow",
+            sm: "flex w-45 h-14 gap-3 px-3 py-4 bg-gray-600 rounded-md border border-gray-400 focus-within:border-yellow",
         }
     },
     defaultVariants: {

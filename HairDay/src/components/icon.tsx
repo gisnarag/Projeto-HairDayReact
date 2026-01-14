@@ -1,7 +1,7 @@
 import { cx, cva, type VariantProps } from "class-variance-authority";
 import React from "react";
 
-export const IconVariants = cva("", {
+export const IconVariants = cva("shrink-0", {
     variants: {
         animate: {
             false: "",

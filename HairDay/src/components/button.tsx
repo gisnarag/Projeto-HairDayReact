@@ -25,9 +25,11 @@ interface ButtonProps extends Omit<React.ComponentProps<"button">, 'size' | 'dis
 
 // CVA sempre vai no className para aplicar estilo.
 export default function Button({ variant, size, disabled, className, children, ...props }: ButtonProps) {
+
     return (
+
         <button
             {...props}
-            className={buttonVariantsProps({ variant, size, disabled, className })}>{children} <Text variant="title-md" cursor="pointer">AGENDAR</Text></button>
+            className={buttonVariantsProps({ variant, size, disabled, className })} > {children} < Text variant="title-md" cursor="pointer"> AGENDAR</Text></button >
     )
 }   

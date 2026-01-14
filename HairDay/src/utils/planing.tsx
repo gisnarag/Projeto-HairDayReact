@@ -1,4 +1,4 @@
-// Capturar o input de data para exibir a hora atual e bloquear dias passados
+// e bloquear dias passados
 
 // Capturar os botões por turno, e exibir estilo ao ser clicado
 
