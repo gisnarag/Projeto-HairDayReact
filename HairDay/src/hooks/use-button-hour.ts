@@ -9,10 +9,10 @@ export default function useButtonHourSelected() {
         console.log("você clicou:", hour)
 
     }
-
     return {
         selectedHour,
+        setSelectedHour,
         handleButtonHourSelected,
-    }
+    };
 }
 

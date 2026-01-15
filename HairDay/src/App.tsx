@@ -18,14 +18,24 @@ import useButtonHourSelected from "./hooks/use-button-hour";
 import { openingHours } from "./utils/opening-hours";
 import ButtonItem from "./components/button-item";
 import useTextInput from "./hooks/use-text-input";
+import { newAppointment } from "./services/new-appointment";
+import { today } from "./hooks/use-date-input";
+import { useState } from "react";
 
 export default function App() {
 
-  const { dateInput, handleChangeDateInput } = useDateInput();
+  const { dateInput, setDateInput, handleChangeDateInput } = useDateInput();
 
-  const { selectedHour, handleButtonHourSelected } = useButtonHourSelected();
+  const { selectedHour, setSelectedHour, handleButtonHourSelected } = useButtonHourSelected();
 
-  const { name, handleTextInput } = useTextInput();
+  const { name, setName, handleTextInput } = useTextInput();
+
+  interface BookingProps {
+    date: string;
+    hour: string;
+  }
+
+  const [isBookings, setBookings] = useState<BookingProps[]>([]);
 
   const hoursMorning = openingHours.filter(item => item.period === "morning").map(item => item.hour)
   const hoursAfternoon = openingHours.filter(item => item.period === "afternoon").map(item => item.hour)
@@ -33,11 +43,28 @@ export default function App() {
 
   function handleConfirmButton() {
     if (!selectedHour || !dateInput || !name) {
-      alert("Preencha um horário para agendamento!")
+      alert("Preencha todos os campos para agendamento! \u{1F63C}")
       return;
-
     }
-    console.log("Enviando para API..", { hora: selectedHour, data: dateInput, nome: name })
+
+    const payload = {
+      hour: selectedHour,
+      data: dateInput,
+      client: name
+    };
+
+    // Ei função, toma esse pacote de dados aqui 
+    newAppointment(payload)
+
+    setBookings(prev => [
+      ...prev,
+      { date: dateInput, hour: selectedHour }
+    ]);
+
+
+    setDateInput(today);
+    setSelectedHour("");
+    setName("");
   }
 
   return (
@@ -136,10 +163,10 @@ export default function App() {
           <ul className="bg-gray-800 mt-7 mr-20">
             <ContainerStyle className=" bg-gray-800 border border-gray-500 border-b-gray-500">
               <div className="flex px-2 gap-1.5">
-                <Icon svg={DayIcon} className="fill-yellow mt-2 ml-2"></Icon>
-                <ServicePeriodList period={"morning"} label={"Manhã"} className="mt-3 mb-3 ml-1 cursor-default" />
+                <Icon svg={DayIcon} className="fill-yellow mt-3 ml-2"></Icon>
+                <ServicePeriodList period={"morning"} label={"Manhã"} className="mt-4 mb-3 ml-1 cursor-default" />
               </div>
-              <Text className="text-gray-300 mt-3" appearance="tertiary">09h-12h</Text>
+              <Text className="text-gray-300 mt-4" appearance="tertiary">09h-12h</Text>
             </ContainerStyle>
 
             <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
@@ -148,10 +175,10 @@ export default function App() {
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-1.5">
-                <Icon svg={AfternoonIcon} className="fill-yellow mt-2 ml-2"></Icon>
-                <ServicePeriodList period={"afternoon"} label={"Tarde"} className="mt-3 mb-3 ml-1 cursor-default" />
+                <Icon svg={AfternoonIcon} className="fill-yellow mt-3 ml-2"></Icon>
+                <ServicePeriodList period={"afternoon"} label={"Tarde"} className="mt-4 mb-3 ml-1 cursor-default" />
               </div>
-              <Text className="text-gray-300 mt-3" appearance="tertiary">13h-17h</Text>
+              <Text className="text-gray-300 mt-4" appearance="tertiary">13h-17h</Text>
             </ContainerStyle>
 
             <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
@@ -160,10 +187,10 @@ export default function App() {
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-2">
-                <Icon svg={NightIcon} className="fill-yellow mt-2 ml-2" animate={true}></Icon>
-                <ServicePeriodList period={"night"} label={"Noite"} className="mt-3 mb-3 ml-1 cursor-default" />
+                <Icon svg={NightIcon} className="fill-yellow mt-3 ml-2" animate={true}></Icon>
+                <ServicePeriodList period={"night"} label={"Noite"} className="mt-4 mb-3 ml-1 cursor-default" />
               </div>
-              <Text className="text-gray-300 mt-3" appearance="tertiary">18h-21h</Text>
+              <Text className="text-gray-300 mt-4" appearance="tertiary">18h-21h</Text>
             </ContainerStyle>
 
             <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">

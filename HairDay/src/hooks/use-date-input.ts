@@ -2,7 +2,7 @@ import { useState } from "react";
 import React from "react";
 import dayjs from "dayjs";
 
-const today = dayjs().format("YYYY-MM-DD");
+export const today = dayjs().format("YYYY-MM-DD");
 
 export default function useDateInput() {
     const [dateInput, setDateInput] = useState(today)
@@ -16,6 +16,7 @@ export default function useDateInput() {
     }
     return {
         dateInput,
+        setDateInput,
         handleChangeDateInput
     };
 }

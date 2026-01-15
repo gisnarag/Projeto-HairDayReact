@@ -11,6 +11,7 @@ export default function useTextInput() {
     }
     return {
         name,
+        setName,
         handleTextInput
-    }
+    };
 }
