@@ -30,6 +30,7 @@ export default function Button({ variant, size, disabled, className, children, .
 
         <button type="button"
             {...props}
-            className={buttonVariantsProps({ variant, size, disabled, className })} > {children} < Text variant="title-md" cursor="pointer">AGENDAR</Text></button >
+            className={buttonVariantsProps({ variant, size, disabled, className })}> {children}
+            <Text variant="title-md" cursor="pointer">AGENDAR</Text></button>
     )
 }   

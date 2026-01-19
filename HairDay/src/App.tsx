@@ -20,7 +20,10 @@ import ButtonItem from "./components/button-item";
 import useTextInput from "./hooks/use-text-input";
 import { newAppointment } from "./services/new-appointment";
 import { today } from "./hooks/use-date-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiConfig } from "./services/api-config";
+import dayjs from "dayjs";
+import { cancelAppointment } from "./services/cancel-appointment";
 
 export default function App() {
 
@@ -30,18 +33,90 @@ export default function App() {
 
   const { name, setName, handleTextInput } = useTextInput();
 
-  interface BookingProps {
-    date: string;
-    hour: string;
-  }
+  const [isBookings, setIsBookings] = useState<{ hour: string, date: string }[]>([])
 
-  const [isBookings, setBookings] = useState<BookingProps[]>([]);
+  const [bookings, setBookings] = useState<{ client: string, hour: string, id: string }[]>([])
 
   const hoursMorning = openingHours.filter(item => item.period === "morning").map(item => item.hour)
   const hoursAfternoon = openingHours.filter(item => item.period === "afternoon").map(item => item.hour)
   const hoursNight = openingHours.filter(item => item.period === "night").map(item => item.hour)
 
-  function handleConfirmButton() {
+  function isPastHour(hour: string) {
+    if (!dayjs(dateInput).isSame(dayjs(), "day")) {
+      return false
+    }
+
+    const selectedDateTime = dayjs(`${dateInput} ${hour}`)
+    return selectedDateTime.isBefore(dayjs())
+  }
+
+  interface Booking {
+    id: string,
+    client: string,
+    hour: string,
+    date: string
+  }
+
+  useEffect(() => {
+    async function loadBookings() {
+      const response = await fetch(`${apiConfig.baseURL}/appointments`)
+      const data = await response.json()
+
+      // isBooking guarda apenas hour + date para bloquear horários, não representa um agendamento completo, por isso não usa id
+      const blocked = data.map((item: Booking) => ({
+        hour: item.hour,
+        date: item.date
+      }))
+
+      setIsBookings(blocked)
+    }
+
+    loadBookings()
+  }, [])
+
+  function isBooked(hour: string, date: string): boolean {
+    return isBookings.some(booking => {
+      console.log({ bookingHour: booking.hour, bookingDate: booking.date, hour, date })
+      return booking.hour === hour && booking.date === date
+    })
+  }
+
+  async function fetchLoadBookings(date: string) {
+    const response = await fetch(`${apiConfig.baseURL}/appointments`)
+    const data: Booking[] = await response.json();
+
+    const filteredBookings = data.filter(book => book.date === date).map(book => ({ client: book.client, hour: book.hour, id: book.id }))
+    setBookings(filteredBookings)
+  }
+
+  useEffect(() => {
+    fetchLoadBookings(dateInput)
+  }, [dateInput])
+
+  async function handleCancelAppointment(
+    id: string,
+    hour: string,
+    date: string
+  ) {
+    try {
+      await cancelAppointment(id)
+
+      setBookings(prev =>
+        prev.filter(booking => booking.id !== id)
+      )
+
+      setIsBookings(prev =>
+        prev.filter(
+          booking =>
+            booking.hour !== hour || booking.date !== date
+        )
+      )
+    } catch {
+      alert("Erro ao cancelar o agendamento 😿")
+    }
+  }
+
+  async function handleConfirmButton() {
     if (!selectedHour || !dateInput || !name) {
       alert("Preencha todos os campos para agendamento! \u{1F63C}")
       return;
@@ -49,18 +124,21 @@ export default function App() {
 
     const payload = {
       hour: selectedHour,
-      data: dateInput,
+      date: dateInput,
       client: name
     };
 
     // Ei função, toma esse pacote de dados aqui 
-    newAppointment(payload)
+    await newAppointment(payload)
 
-    setBookings(prev => [
-      ...prev,
-      { date: dateInput, hour: selectedHour }
-    ]);
+    await fetchLoadBookings(dateInput)
 
+    // Atualiza estado para renderizar o componente e o disabled ser habilitado logo após um novo agendameto
+    setIsBookings(prev => [...prev, {
+      hour: selectedHour,
+      date: dateInput,
+    }]
+    )
 
     setDateInput(today);
     setSelectedHour("");
@@ -99,7 +177,7 @@ export default function App() {
           <ul className="bg-gray-700 h-12 ml-10 flex items-center justify-between w-95">
             <li className="flex gap-3" >
               {hoursMorning.map(hour => (
-                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)} disabled={isBooked(hour, dateInput) || isPastHour(hour)}>
                   {hour}
                 </ButtonItem>
               ))}
@@ -111,7 +189,7 @@ export default function App() {
           <ul className="bg-gray-700 h-25 ml-10 flex items-center justify-between w-95">
             <li className="flex flex-wrap gap-3" >
               {hoursAfternoon.map(hour => (
-                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                <ButtonItem key={hour} selected={selectedHour == hour} disabled={isBooked(hour, dateInput) || isPastHour(hour)} onClick={() => handleButtonHourSelected(hour)}>
                   {hour}
                 </ButtonItem>
               ))}
@@ -123,7 +201,7 @@ export default function App() {
           <ul className="bg-gray-700 h-12 ml-10 flex items-center justify-between w-95">
             <li className="flex gap-3" >
               {hoursNight.map(hour => (
-                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)}>
+                <ButtonItem key={hour} selected={selectedHour == hour} onClick={() => handleButtonHourSelected(hour)} disabled={isBooked(hour, dateInput) || isPastHour(hour)}>
                   {hour}
                 </ButtonItem>
               ))}
@@ -169,9 +247,15 @@ export default function App() {
               <Text className="text-gray-300 mt-4" appearance="tertiary">09h-12h</Text>
             </ContainerStyle>
 
-            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
-              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" />
-            </ScheduleItem>
+            {bookings.filter(booking => hoursMorning.includes(booking.hour)).map((booking) => (
+              <ScheduleItem
+                key={booking.id}
+                client={booking.client}
+                hour={booking.hour}
+                className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+                <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" onClick={() => handleCancelAppointment(booking.id, booking.hour, dateInput)} />
+              </ScheduleItem>
+            ))}
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-1.5">
@@ -181,9 +265,15 @@ export default function App() {
               <Text className="text-gray-300 mt-4" appearance="tertiary">13h-17h</Text>
             </ContainerStyle>
 
-            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
-              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" />
-            </ScheduleItem>
+            {bookings.filter(booking => hoursAfternoon.includes(booking.hour)).map((booking) => (
+              <ScheduleItem
+                key={booking.id}
+                client={booking.client}
+                hour={booking.hour}
+                className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+                <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" onClick={() => handleCancelAppointment(booking.id, booking.hour, dateInput)} />
+              </ScheduleItem>
+            ))}
 
             <ContainerStyle className="border border-gray-500 border-b-gray-500 bg-gray-800">
               <div className="flex px-2 gap-2">
@@ -193,9 +283,15 @@ export default function App() {
               <Text className="text-gray-300 mt-4" appearance="tertiary">18h-21h</Text>
             </ContainerStyle>
 
-            <ScheduleItem className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
-              <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-3" />
-            </ScheduleItem>
+            {bookings.filter(booking => hoursNight.includes(booking.hour)).map((booking) => (
+              <ScheduleItem
+                key={booking.id}
+                client={booking.client}
+                hour={booking.hour}
+                className="flex mb-3 border border-gray-500 border-t-0 bg-gray-800">
+                <ButtonTrashIcon icon={TrashIcon} className="ml-auto mt-5 mb-5" onClick={() => handleCancelAppointment(booking.id, booking.hour, dateInput)} />
+              </ScheduleItem>
+            ))}
           </ul>
         </aside>
       </div>

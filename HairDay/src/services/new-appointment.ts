@@ -2,7 +2,7 @@ import { apiConfig } from "./api-config";
 
 interface newAppointmentProps {
     hour: string,
-    data: string,
+    date: string,
     client: string,
 };
 
@@ -26,7 +26,7 @@ export async function newAppointment(payload: newAppointmentProps) {
     // Mesmo se o servidor responder erro (400, 500), fetch ainda retorna um response, por isso para verificar usa-se -> response.ok. 
     // response.ok é uma propriedade booleana do objeto retornado pelo fetch, se o status HTTP foi sucesso (true)
     if (!response.ok) {
-        console.log("error na requisição:", response.status)
+        console.log("Erro na requisição:", response.status)
         alert("Não foi possível agendar. Tente novamente mais tarde. \u{1F63F}")
         return;
     }
